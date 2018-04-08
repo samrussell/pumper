@@ -23,7 +23,7 @@ class Bitstream
   end
 
   def bits_to_number(bits)
-    shifts = (0...bits.size).to_a.reverse
+    shifts = (0...bits.size).to_a
     bits.zip(shifts).map do |bit, shift|
       bit << shift
     end.reduce(0, :+)
