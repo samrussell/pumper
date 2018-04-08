@@ -1,14 +1,14 @@
 class Bitstream
   BITS_PER_BYTE = 8
   BIT_CONVERSION_MASKS_AND_SHIFTS = [
-    { mask: 0x80, shift: 7},
-    { mask: 0x40, shift: 6},
-    { mask: 0x20, shift: 5},
-    { mask: 0x10, shift: 4},
-    { mask: 0x08, shift: 3},
-    { mask: 0x04, shift: 2},
-    { mask: 0x02, shift: 1},
     { mask: 0x01, shift: 0},
+    { mask: 0x02, shift: 1},
+    { mask: 0x04, shift: 2},
+    { mask: 0x08, shift: 3},
+    { mask: 0x10, shift: 4},
+    { mask: 0x20, shift: 5},
+    { mask: 0x40, shift: 6},
+    { mask: 0x80, shift: 7},
   ]
 
   def initialize(file)
