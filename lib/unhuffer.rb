@@ -1,6 +1,7 @@
 require "./lib/bitstream.rb"
 require "./lib/huffman_table.rb"
 require "./lib/length_decoder.rb"
+require "./lib/distance_decoder.rb"
 
 class Unhuffer
   FIXED_HUFFMAN_CODES = 1
@@ -20,6 +21,7 @@ class Unhuffer
     build_huffman_tables
 
     length_decoder = LengthDecoder.new(@bitstream)
+    distance_decoder = DistanceDecoder.new(@bitstream)
 
     symbols = []
     while true
@@ -30,7 +32,7 @@ class Unhuffer
       else
         length = length_decoder.decode(symbol)
         distance_prefix = @distance_table.decode(@bitstream)
-        distance = read_distance(distance_prefix)
+        distance = distance_decoder.decode(distance_prefix)
 
         length.times.each do
           symbols.push(symbols[-distance])
@@ -42,38 +44,6 @@ class Unhuffer
   end
 
   private
-
-  def read_length(symbol)
-    if 257 <= symbol && symbol <= 264
-      3 + symbol - 257
-    elsif 265 <= symbol && symbol <= 268
-      11 + (symbol - 265) * 2 + @bitstream.bits_to_number(@bitstream.read(1))
-    else
-      raise "Can't handle length symbol #{symbol}"
-    end
-  end
-
-  def read_distance(symbol)
-    if 0 <= symbol && symbol <= 3
-      1 + symbol
-    elsif 4 <= symbol && symbol <= 5
-      5 + (symbol - 4) * 2 + @bitstream.bits_to_number(@bitstream.read(1))
-    elsif 6 <= symbol && symbol <= 7
-      9 + (symbol - 6) * 4 + @bitstream.bits_to_number(@bitstream.read(2))
-    elsif 8 <= symbol && symbol <= 9
-      17 + (symbol - 8) * 8 + @bitstream.bits_to_number(@bitstream.read(3))
-    elsif 10 <= symbol && symbol <= 11
-      33 + (symbol - 10) * 16 + @bitstream.bits_to_number(@bitstream.read(4))
-    elsif 12 <= symbol && symbol <= 13
-      65 + (symbol - 12) * 32 + @bitstream.bits_to_number(@bitstream.read(5))
-    elsif 14 <= symbol && symbol <= 15
-      129 + (symbol - 14) * 64 + @bitstream.bits_to_number(@bitstream.read(6))
-    elsif 16 <= symbol && symbol <= 17
-      257 + (symbol - 16) * 128 + @bitstream.bits_to_number(@bitstream.read(7))
-    else
-      raise "Can't handle distance symbol #{symbol}"
-    end
-  end
 
   def build_huffman_tables
     num_literal_length_codes = 257 + @bitstream.bits_to_number(@bitstream.read(5))
