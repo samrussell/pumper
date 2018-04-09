@@ -1,5 +1,6 @@
 require "./lib/bitstream.rb"
 require "./lib/huffman_table.rb"
+require "./lib/length_decoder.rb"
 
 class Unhuffer
   FIXED_HUFFMAN_CODES = 1
@@ -18,6 +19,8 @@ class Unhuffer
 
     build_huffman_tables
 
+    length_decoder = LengthDecoder.new(@bitstream)
+
     symbols = []
     while true
       symbol = @literal_length_table.decode(@bitstream)
@@ -25,7 +28,7 @@ class Unhuffer
       if symbol < 256
         symbols.push(symbol)
       else
-        length = read_length(symbol)
+        length = length_decoder.decode(symbol)
         distance_prefix = @distance_table.decode(@bitstream)
         distance = read_distance(distance_prefix)
 
