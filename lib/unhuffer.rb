@@ -2,6 +2,7 @@ require "./lib/bitstream.rb"
 require "./lib/huffman_table.rb"
 require "./lib/length_decoder.rb"
 require "./lib/distance_decoder.rb"
+require "./lib/code_length_decoder.rb"
 
 class Unhuffer
   FIXED_HUFFMAN_CODES = 1
@@ -61,57 +62,10 @@ class Unhuffer
 
     code_length_table = HuffmanTable.new(code_lengths)
 
-    # there's a nicer lazy enumerable way of doing this
-    # we're going to do it the ugly way for now and refactor later
-    literal_length_codes = []
-    while literal_length_codes.size < num_literal_length_codes
-      code = code_length_table.decode(@bitstream)
-      if code == 0
-        literal_length_codes.push(nil)
-      elsif code < 16
-        literal_length_codes.push(code)
-      elsif code == 16
-        # copy the previous code 3-6 times based on next 2 bits
-        num_copies = 3 + @bitstream.bits_to_number(@bitstream.read(2))
-        last_code = literal_length_codes.last
-        num_copies.times.each { literal_length_codes.push(last_code) }
-      elsif code == 17
-        # add 3-10 0's based on the next 3 bits
-        num_copies = 3 + @bitstream.bits_to_number(@bitstream.read(3))
-        num_copies.times.each { literal_length_codes.push(nil) }
-      elsif code == 18
-        # add 11-138 0's based on the next 7 bits
-        num_copies = 11 + @bitstream.bits_to_number(@bitstream.read(7))
-        num_copies.times.each { literal_length_codes.push(nil) }
-      end
-    end
-
+    literal_length_codes = CodeLengthDecoder.new(@bitstream, code_length_table).decode(num_literal_length_codes)
     @literal_length_table = HuffmanTable.new(literal_length_codes)
 
-    # see we're even duplicating code here, so an obvious abstraction to pull out
-    distance_codes = []
-    while distance_codes.size < num_distance_codes
-      code = code_length_table.decode(@bitstream)
-      if code == 0
-        distance_codes.push(nil)
-      elsif code < 16
-        distance_codes.push(code)
-      elsif code == 16
-        # copy the previous code 3-6 times based on next 2 bits
-        num_copies = 3 + @bitstream.bits_to_number(@bitstream.read(2))
-        last_code = distance_codes.last
-        num_copies.times.each { distance_codes.push(last_code) }
-      elsif code == 17
-        # add 3-10 0's based on the next 3 bits
-        num_copies = 3 + @bitstream.bits_to_number(@bitstream.read(3))
-        num_copies.times.each { distance_codes.push(nil) }
-      elsif code == 18
-        # add 11-138 0's based on the next 7 bits
-        num_copies = 11 + @bitstream.bits_to_number(@bitstream.read(7))
-        num_copies.times.each { distance_codes.push(nil) }
-      end
-    end
-
+    distance_codes = CodeLengthDecoder.new(@bitstream, code_length_table).decode(num_distance_codes)
     @distance_table = HuffmanTable.new(distance_codes)
   end
 end
