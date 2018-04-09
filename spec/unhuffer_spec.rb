@@ -88,4 +88,18 @@
 #   6=>"11111",
 # }
 # now let's build the literal/length codes, all 263 of them
-# 
+#
+# 17 = read 3 bits
+# 7: 7 + 3 = 10x 0
+# 0 -> 9 = 0
+# 8: 0x0A is 8 bits long
+# 18 = read 7 bits
+# 10: 10 + 11 = 21x 0
+# 0x0B -> 0x1F = 0
+# 3: 0x20 is 3 bits long
+# 18: read 7 bits
+# 0: 0 : 11 = 11x 0
+# 0x21 -> 0x2B = 0
+# 7: 0x2C is 7 bits long
+# 0: 0x2D is 0 bits long
+# 6: 0x2E is 6 bits long

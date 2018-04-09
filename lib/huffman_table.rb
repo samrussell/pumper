@@ -3,13 +3,13 @@ class HuffmanTable
     @codeword_lengths = codeword_lengths
   end
 
-  def decode(bit_stream)
+  def decode(bitstream)
     build_table_if_needed
 
-    bits = bit_stream.read(@shortest_codeword_length)
+    bits = bitstream.read(@shortest_codeword_length)
     until @table.key?(bits.join)
       raise "Codeword not in table" if bits.size >= @longest_codeword_length
-      bits += bit_stream.read(1)
+      bits += bitstream.read(1)
     end
 
     @table[bits.join]

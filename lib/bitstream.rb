@@ -11,6 +11,8 @@ class Bitstream
     { mask: 0x80, shift: 7},
   ]
 
+  attr_reader :file
+
   def initialize(file)
     @file = file
     @bit_buffer = []
