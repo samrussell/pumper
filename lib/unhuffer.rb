@@ -23,6 +23,9 @@ class Unhuffer
 
     lz77_encoded_data = decode_huffman
 
+    require "byebug"
+    byebug
+
     symbols = Lz77Decoder.new.decode(lz77_encoded_data)
 
     symbols.map(&:chr).join
