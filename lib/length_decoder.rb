@@ -6,16 +6,10 @@ class LengthDecoder
   def decode(symbol)
     if 257 <= symbol && symbol <= 264
       3 + symbol - 257
-    elsif 265 <= symbol && symbol <= 268
-      11 + ((symbol - 265) << 1) + @bitstream.bits_to_number(@bitstream.read(1))
-    elsif 269 <= symbol && symbol <= 272
-      19 + ((symbol - 269) << 2) + @bitstream.bits_to_number(@bitstream.read(2))
-    elsif 273 <= symbol && symbol <= 276
-      35 + ((symbol - 273) << 3) + @bitstream.bits_to_number(@bitstream.read(3))
-    elsif 277 <= symbol && symbol <= 280
-      67 + ((symbol - 277) << 4) + @bitstream.bits_to_number(@bitstream.read(4))
-    elsif 281 <= symbol && symbol <= 284
-      131 + ((symbol - 281) << 5) + @bitstream.bits_to_number(@bitstream.read(5))
+    elsif 265 <= symbol && symbol <= 284
+      num_bits = (symbol-261) / 4
+      offset = (symbol-261) % 4
+      3 + (4 << num_bits) + (offset << num_bits) + @bitstream.bits_to_number(@bitstream.read(num_bits))
     elsif 285 == symbol
       258
     else
