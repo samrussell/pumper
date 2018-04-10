@@ -47,15 +47,15 @@ class Unhuffer
 
   def read_header
     final_flag = @bitstream.read(1)
-    encoding_type = @bitstream.bits_to_number(@bitstream.read(2))
+    encoding_type = @bitstream.read_number(2)
     raise "Can only handle dynamic codes" unless encoding_type == DYNAMIC_HUFFMAN_CODES
   end
 
   def build_huffman_tables
-    num_literal_length_codes = 257 + @bitstream.bits_to_number(@bitstream.read(5))
-    num_distance_codes = 1 + @bitstream.bits_to_number(@bitstream.read(5))
-    num_code_length_codes = 4 + @bitstream.bits_to_number(@bitstream.read(4))
-    unsorted_code_length_codes = num_code_length_codes.times.map { @bitstream.bits_to_number(@bitstream.read(3)) }
+    num_literal_length_codes = 257 + @bitstream.read_number(5)
+    num_distance_codes = 1 + @bitstream.read_number(5)
+    num_code_length_codes = 4 + @bitstream.read_number(4)
+    unsorted_code_length_codes = num_code_length_codes.times.map { @bitstream.read_number(3) }
     code_lengths_dictionary = CODE_LENGTHS_ARRAY.zip(unsorted_code_length_codes).each.with_object({}) do |(code, length), hash|
       if length && length > 0
         hash[code] = length

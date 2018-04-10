@@ -9,7 +9,7 @@ class LengthDecoder
     elsif 265 <= symbol && symbol <= 284
       num_bits = (symbol-261) / 4
       offset = (symbol-261) % 4
-      3 + (4 << num_bits) + (offset << num_bits) + @bitstream.bits_to_number(@bitstream.read(num_bits))
+      3 + (4 << num_bits) + (offset << num_bits) + @bitstream.read_number(num_bits)
     elsif 285 == symbol
       258
     else

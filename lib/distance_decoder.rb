@@ -9,7 +9,7 @@ class DistanceDecoder
     elsif 4 <= symbol && symbol <= 29
       num_bits = (symbol-2) / 2
       offset = (symbol-2) % 2
-      1 + (2 << num_bits) + (offset << num_bits) + @bitstream.bits_to_number(@bitstream.read(num_bits))
+      1 + (2 << num_bits) + (offset << num_bits) + @bitstream.read_number(num_bits)
     else
       raise "Can't handle length symbol #{symbol}"
     end

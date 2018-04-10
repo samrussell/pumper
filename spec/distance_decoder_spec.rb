@@ -15,7 +15,7 @@ describe DistanceDecoder do
       allow(bitstream).to receive(:read).and_return(
         [0, 0], [0, 0, 1, 0, 0, 1], [1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1]
       )
-      allow(bitstream).to receive(:bits_to_number).and_call_original
+      allow(bitstream).to receive(:read_bits).and_call_original
       expect(distance_decoder.decode(7)).to eq(13)
       expect(distance_decoder.decode(14)).to eq(165)
       expect(distance_decoder.decode(21)).to eq(1984)

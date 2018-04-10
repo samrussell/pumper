@@ -24,14 +24,18 @@ class Bitstream
     bits = @bit_buffer.shift(num_bits)
   end
 
+  def read_number(num_bits)
+    bits_to_number(read(num_bits))
+  end
+
+  private
+
   def bits_to_number(bits)
     shifts = (0...bits.size).to_a
     bits.zip(shifts).map do |bit, shift|
       bit << shift
     end.reduce(0, :+)
   end
-
-  private
 
   def top_up_buffer(num_bits)
     num_extra_bits = num_bits - @bit_buffer.size

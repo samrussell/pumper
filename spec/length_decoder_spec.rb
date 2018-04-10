@@ -13,7 +13,7 @@ describe LengthDecoder do
 
     it "decodes more complex ones (a range of extra bits)" do
       allow(bitstream).to receive(:read).and_return([0], [0, 1], [1, 1, 0, 0, 1])
-      allow(bitstream).to receive(:bits_to_number).and_call_original
+      allow(bitstream).to receive(:read_bits).and_call_original
       expect(length_decoder.decode(265)).to eq(11)
       expect(length_decoder.decode(272)).to eq(33)
       expect(length_decoder.decode(281)).to eq(150)
