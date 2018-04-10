@@ -15,9 +15,8 @@ class Unhuffer
 
   def data
     @bitstream = Bitstream.new(@block_file)
-    final_flag = @bitstream.read(1)
-    encoding_type = @bitstream.bits_to_number(@bitstream.read(2))
-    raise "Can only handle dynamic codes" unless encoding_type == DYNAMIC_HUFFMAN_CODES
+
+    read_header
 
     build_huffman_tables
 
@@ -45,6 +44,12 @@ class Unhuffer
   end
 
   private
+
+  def read_header
+    final_flag = @bitstream.read(1)
+    encoding_type = @bitstream.bits_to_number(@bitstream.read(2))
+    raise "Can only handle dynamic codes" unless encoding_type == DYNAMIC_HUFFMAN_CODES
+  end
 
   def build_huffman_tables
     num_literal_length_codes = 257 + @bitstream.bits_to_number(@bitstream.read(5))
