@@ -3,6 +3,7 @@ require "./lib/huffman_table.rb"
 require "./lib/length_decoder.rb"
 require "./lib/distance_decoder.rb"
 require "./lib/code_length_decoder.rb"
+require "./lib/lz77_decoder.rb"
 
 class Unhuffer
   FIXED_HUFFMAN_CODES = 1
@@ -22,7 +23,7 @@ class Unhuffer
 
     lz77_encoded_data = decode_huffman
 
-    symbols = decode_lz77(lz77_encoded_data)
+    symbols = Lz77Decoder.new.decode(lz77_encoded_data)
 
     symbols.map(&:chr).join
   end
@@ -38,7 +39,7 @@ class Unhuffer
       symbol = @literal_length_table.decode(@bitstream)
       break if symbol == 256
       if symbol < 256
-        symbols.push(symbol)
+        symbols.push(symbol.chr)
       else
         length = length_decoder.decode(symbol)
         distance_prefix = @distance_table.decode(@bitstream)
@@ -49,22 +50,6 @@ class Unhuffer
     end
 
     symbols
-  end
-
-  def decode_lz77(encoded_data)
-    decoded_data = []
-    encoded_data.each do |literal_or_copy|
-      if literal_or_copy.is_a?(Fixnum)
-        decoded_data.push(literal_or_copy)
-      else
-        distance, length = literal_or_copy
-        length.times.each do
-          decoded_data.push(decoded_data[-distance])
-        end
-      end
-    end
-
-    decoded_data
   end
 
   def read_header
