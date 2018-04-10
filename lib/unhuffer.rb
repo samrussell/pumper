@@ -20,6 +20,16 @@ class Unhuffer
 
     build_huffman_tables
 
+    lz77_encoded_data = decode_huffman
+
+    symbols = decode_lz77(lz77_encoded_data)
+
+    symbols.map(&:chr).join
+  end
+
+  private
+
+  def decode_huffman
     length_decoder = LengthDecoder.new(@bitstream)
     distance_decoder = DistanceDecoder.new(@bitstream)
 
@@ -34,16 +44,28 @@ class Unhuffer
         distance_prefix = @distance_table.decode(@bitstream)
         distance = distance_decoder.decode(distance_prefix)
 
+        symbols.push([distance, length])
+      end
+    end
+
+    symbols
+  end
+
+  def decode_lz77(encoded_data)
+    decoded_data = []
+    encoded_data.each do |literal_or_copy|
+      if literal_or_copy.is_a?(Fixnum)
+        decoded_data.push(literal_or_copy)
+      else
+        distance, length = literal_or_copy
         length.times.each do
-          symbols.push(symbols[-distance])
+          decoded_data.push(decoded_data[-distance])
         end
       end
     end
 
-    symbols.map(&:chr).join
+    decoded_data
   end
-
-  private
 
   def read_header
     final_flag = @bitstream.read(1)
