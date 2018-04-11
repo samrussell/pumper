@@ -54,7 +54,7 @@ describe Lz77Encoder do
 
       it "LZ77 encodes the data with the greedy algorithm" do
         actual_encoded_data = encoder.encode(decoded_data)
-        expect(encoder.encode(actual_encoded_data)).to eq(encoded_data)
+        expect(actual_encoded_data).to eq(encoded_data)
       end
     end
   end
