@@ -1,5 +1,6 @@
 class Lz77Encoder
   attr_reader :matches
+
   def encode(decoded_data)
     encoded_data = []
     @matches = {}
@@ -25,18 +26,32 @@ class Lz77Encoder
         distance = index-match_index
 
         encoded_data.push([distance, match_length])
-        increment = match_length
+
+        # add all the next bits to the dictionary before we skip over them
+        (0...match_length).each do |offset|
+          key = decoded_data[index+offset...index+offset+3]
+
+          if not matches.key?(key)
+            matches[key] = []
+          end
+
+          matches[key].push(index+offset)
+        end
+
+        index += match_length
       else
         matches[key] = []
         encoded_data.push(decoded_data[index])
-        increment = 1
+        matches[key].push(index)
+        index += 1
       end
-
-      matches[key].push(index)
-      index += increment
     end
 
-    encoded_data += decoded_data[-2..-1]
+    if index == decoded_data.length-2
+      encoded_data += decoded_data[-2..-1]
+    elsif index == decoded_data.length-1
+      encoded_data.push(decoded_data[-1])
+    end
 
     encoded_data
   end
