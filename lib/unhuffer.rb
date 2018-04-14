@@ -33,26 +33,31 @@ class Unhuffer
 
   private
 
-  def decode_huffman
-    length_decoder = LengthDecoder.new(@bitstream)
-    distance_decoder = DistanceDecoder.new(@bitstream)
+  def decode_huffman_symbols
+    return enum_for(:decode_huffman_symbols) unless block_given?
 
-    symbols = []
     while true
       symbol = @literal_length_table.decode(@bitstream)
-      break if symbol == 256
-      if symbol < 256
-        symbols.push(symbol.chr)
-      else
-        length = length_decoder.decode(symbol)
-        distance_prefix = @distance_table.decode(@bitstream)
-        distance = distance_decoder.decode(distance_prefix)
 
-        symbols.push([distance, length])
+      break if symbol == 256
+
+      if symbol < 256
+        yield symbol.chr
+      else
+        length = @length_decoder.decode(symbol)
+        distance_prefix = @distance_table.decode(@bitstream)
+        distance = @distance_decoder.decode(distance_prefix)
+
+        yield [distance, length]
       end
     end
+  end
 
-    symbols
+  def decode_huffman
+    @length_decoder = LengthDecoder.new(@bitstream)
+    @distance_decoder = DistanceDecoder.new(@bitstream)
+
+    decode_huffman_symbols.to_a
   end
 
   def read_header
