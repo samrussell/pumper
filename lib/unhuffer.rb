@@ -9,6 +9,9 @@ class Unhuffer
   FIXED_HUFFMAN_CODES = 1
   DYNAMIC_HUFFMAN_CODES = 2
   CODE_LENGTHS_ARRAY = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]
+  MINIMUM_LITERAL_LENGTH_CODES = 257
+  MINIMUM_DISTANCE_CODES = 1
+  MINIMUM_CODE_LENGTH_CODES = 4
 
   def initialize(block_file)
     @block_file = block_file
@@ -59,9 +62,9 @@ class Unhuffer
   end
 
   def build_huffman_tables
-    num_literal_length_codes = 257 + @bitstream.read_number(5)
-    num_distance_codes = 1 + @bitstream.read_number(5)
-    num_code_length_codes = 4 + @bitstream.read_number(4)
+    num_literal_length_codes = MINIMUM_LITERAL_LENGTH_CODES + @bitstream.read_number(5)
+    num_distance_codes = MINIMUM_DISTANCE_CODES + @bitstream.read_number(5)
+    num_code_length_codes = MINIMUM_CODE_LENGTH_CODES + @bitstream.read_number(4)
     unsorted_code_length_codes = num_code_length_codes.times.map { @bitstream.read_number(3) }
     code_lengths_dictionary = CODE_LENGTHS_ARRAY.zip(unsorted_code_length_codes).each.with_object({}) do |(code, length), hash|
       if length && length > 0
