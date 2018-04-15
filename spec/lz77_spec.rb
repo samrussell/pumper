@@ -12,13 +12,10 @@ describe "LZ77 encoder/decoders" do
     "culpa qui officia deserunt mollit anim id est laborum.\n").chars
   end
 
-  let(:encoder) { Lz77Encoder.new }
-  let(:decoder) { Lz77Decoder.new }
+  let(:encoded_data) { Lz77Encoder.new.encode(decoded_data) }
+  let(:actual_decoded_data) { Lz77Decoder.new(decoded_data).decode.to_a }
 
   it "encodes to something smaller and then decodes correctly" do
-    encoded_data = encoder.encode(decoded_data)
-    actual_decoded_data = decoder.decode(encoded_data)
-
     expect(encoded_data.length).to be < decoded_data.length
     expect(decoded_data).to eq(actual_decoded_data)
   end

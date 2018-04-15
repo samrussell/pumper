@@ -2,8 +2,8 @@ require "./lib/lz77_decoder.rb"
 
 describe Lz77Decoder do
   describe "#decode" do
-    let(:decoder) { Lz77Decoder.new }
-    let(:subject) { decoder.decode(encoded_string) }
+    let(:decoder) { Lz77Decoder.new(encoded_string) }
+    let(:subject) { decoder.decode.to_a }
 
     context "with just literals" do
       let(:encoded_string) { "abc123!@#".chars }

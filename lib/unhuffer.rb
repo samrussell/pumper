@@ -26,7 +26,7 @@ class Unhuffer
 
     lz77_encoded_data = decode_huffman
 
-    symbols = Lz77Decoder.new.decode(lz77_encoded_data)
+    symbols = Lz77Decoder.new(lz77_encoded_data).decode.to_a
 
     symbols.map(&:chr).join
   end
