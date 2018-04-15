@@ -40,23 +40,27 @@ class MatchDictionary
 end
 
 class Lz77Encoder
+  def initialize(decoded_data)
+    @decoded_data = decoded_data
+  end
 
-  def encode(decoded_data)
-    encoded_data = []
-    match_dictionary = MatchDictionary.new(decoded_data)
+  def encode
+    return enum_for(:encode) unless block_given?
+
+    match_dictionary = MatchDictionary.new(@decoded_data)
 
     # encode looking 2 bytes ahead
     index = 0
 
-    while index < (decoded_data.length-2)
+    while index < (@decoded_data.length-2)
       if match_dictionary.longest_match_and_length(index)
         distance = index-match_dictionary.match_index
 
-        encoded_data.push([distance, match_dictionary.match_length])
+        yield [distance, match_dictionary.match_length]
 
         # add all the next bits to the dictionary before we skip over them
         (0...match_dictionary.match_length).each do |offset|
-          key = decoded_data[index+offset...index+offset+3]
+          key = @decoded_data[index+offset...index+offset+3]
 
           match_dictionary.add(index+offset)
         end
@@ -65,18 +69,16 @@ class Lz77Encoder
       else
         match_dictionary.add(index)
 
-        encoded_data.push(decoded_data[index])
+        yield @decoded_data[index]
 
         index += 1
       end
     end
 
-    if index == decoded_data.length-2
-      encoded_data += decoded_data[-2..-1]
-    elsif index == decoded_data.length-1
-      encoded_data.push(decoded_data[-1])
+    if index == @decoded_data.length-2
+      @decoded_data[-2..-1].each {|data| yield data}
+    elsif index == @decoded_data.length-1
+      yield @decoded_data[-1]
     end
-
-    encoded_data
   end
 end

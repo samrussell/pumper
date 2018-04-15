@@ -12,7 +12,7 @@ describe "LZ77 encoder/decoders" do
     "culpa qui officia deserunt mollit anim id est laborum.\n").chars
   end
 
-  let(:encoded_data) { Lz77Encoder.new.encode(decoded_data) }
+  let(:encoded_data) { Lz77Encoder.new(decoded_data).encode.to_a }
   let(:actual_decoded_data) { Lz77Decoder.new(decoded_data).decode.to_a }
 
   it "encodes to something smaller and then decodes correctly" do

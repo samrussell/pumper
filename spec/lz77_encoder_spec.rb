@@ -15,14 +15,14 @@ end
 
 describe Lz77Encoder do
   describe "#encode" do
-    let(:encoder) { Lz77Encoder.new }
+    let(:encoder) { Lz77Encoder.new(decoded_data) }
 
     context "with something uncompressible" do
       let(:decoded_data) { "abc123ABCJKL".chars }
       let(:encoded_data) { "abc123ABCJKL".chars }
 
       it "LZ77 encodes the data with the greedy algorithm" do
-        expect(encoder.encode(decoded_data)).to eq(encoded_data)
+        expect(encoder.encode.to_a).to eq(encoded_data)
       end
     end
 
@@ -31,7 +31,7 @@ describe Lz77Encoder do
       let(:encoded_data) { build_encoded_data_array(["abc", [3, 3], "d", [3, 3], "e"]) }
 
       it "LZ77 encodes the data with the greedy algorithm" do
-        expect(encoder.encode(decoded_data)).to eq(encoded_data)
+        expect(encoder.encode.to_a).to eq(encoded_data)
       end
     end
 
@@ -40,7 +40,7 @@ describe Lz77Encoder do
       let(:encoded_data) { build_encoded_data_array(["abcde", [5, 5]]) }
 
       it "LZ77 encodes the data with the greedy algorithm" do
-        expect(encoder.encode(decoded_data)).to eq(encoded_data)
+        expect(encoder.encode.to_a).to eq(encoded_data)
       end
     end
 
@@ -49,7 +49,7 @@ describe Lz77Encoder do
       let(:encoded_data) { build_encoded_data_array(["abcd", [4, 3], "e", [4, 4]]) }
 
       it "LZ77 encodes the data with the greedy algorithm" do
-        expect(encoder.encode(decoded_data)).to eq(encoded_data)
+        expect(encoder.encode.to_a).to eq(encoded_data)
       end
     end
 
@@ -80,7 +80,7 @@ describe Lz77Encoder do
       end
 
       it "LZ77 encodes the data with the greedy algorithm" do
-        actual_encoded_data = encoder.encode(decoded_data)
+        actual_encoded_data = encoder.encode.to_a
         expect(actual_encoded_data).to eq(encoded_data)
       end
     end
