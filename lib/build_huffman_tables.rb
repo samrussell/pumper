@@ -29,6 +29,13 @@ class BuildHuffmanTables
     num_literal_length_codes = MINIMUM_LITERAL_LENGTH_CODES + @bitstream.read_number(5)
     num_distance_codes = MINIMUM_DISTANCE_CODES + @bitstream.read_number(5)
     num_code_length_codes = MINIMUM_CODE_LENGTH_CODES + @bitstream.read_number(4)
+
+    @code_length_table = build_code_length_table(num_code_length_codes)
+    @literal_length_table = build_literal_length_table(num_literal_length_codes)
+    @distance_table = build_distance_table(num_distance_codes)
+  end
+
+  def build_code_length_table(num_code_length_codes)
     unsorted_code_length_codes = num_code_length_codes.times.map { @bitstream.read_number(3) }
     code_lengths_dictionary = CODE_LENGTHS_ARRAY.zip(unsorted_code_length_codes).each.with_object({}) do |(code, length), hash|
       if length && length > 0
@@ -37,14 +44,21 @@ class BuildHuffmanTables
         hash[code] = nil
       end
     end
+
     code_lengths = code_lengths_dictionary.sort.map {|x| x[1]}
 
-    code_length_table = HuffmanTable.new(code_lengths)
+    HuffmanTable.new(code_lengths)
+  end
 
-    literal_length_codes = CodeLengthDecoder.new(@bitstream, code_length_table).decode(num_literal_length_codes)
-    @literal_length_table = HuffmanTable.new(literal_length_codes)
+  def build_literal_length_table(num_literal_length_codes)
+    literal_length_codes = CodeLengthDecoder.new(@bitstream, @code_length_table).decode(num_literal_length_codes)
 
-    distance_codes = CodeLengthDecoder.new(@bitstream, code_length_table).decode(num_distance_codes)
-    @distance_table = HuffmanTable.new(distance_codes)
+    HuffmanTable.new(literal_length_codes)
+  end
+
+  def build_distance_table(num_distance_codes)
+    distance_codes = CodeLengthDecoder.new(@bitstream, @code_length_table).decode(num_distance_codes)
+
+    HuffmanTable.new(distance_codes)
   end
 end
