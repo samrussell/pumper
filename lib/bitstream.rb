@@ -18,6 +18,11 @@ class Bitstream
     @bit_buffer = []
   end
 
+  def reset
+    @file.seek(0)
+    @bit_buffer = []
+  end
+
   def read(num_bits)
     top_up_buffer(num_bits) if num_bits > @bit_buffer.size
 
@@ -26,6 +31,20 @@ class Bitstream
 
   def read_number(num_bits)
     bits_to_number(read(num_bits))
+  end
+
+  def write(bits)
+    bits.each do |bit|
+      @bit_buffer.push(bit)
+
+      if @bit_buffer.length == 8
+        @file.write(bits_to_byte(@bit_buffer.shift(8)).chr)
+      end
+    end
+  end
+
+  def flush
+    @file.write(bits_to_byte(@bit_buffer).chr)
   end
 
   private
@@ -50,5 +69,9 @@ class Bitstream
 
   def byte_to_bits(byte)
     BIT_CONVERSION_MASKS_AND_SHIFTS.map { |masks_and_shifts| (byte & masks_and_shifts[:mask]) >> masks_and_shifts[:shift] }
+  end
+
+  def bits_to_byte(bits)
+    bits_to_number(bits)
   end
 end

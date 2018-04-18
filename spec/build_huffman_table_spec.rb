@@ -29,7 +29,7 @@ describe BuildHuffmanTable do
       # sample from the RFC
       let(:symbol_counts) { [0, 2, 4, 0, 0, 1, 1] }
 
-      let(:expected_codeword_lengths) { [0, 2, 1, 0, 0, 3, 3] }
+      let(:expected_codeword_lengths) { [nil, 2, 1, nil, nil, 3, 3] }
 
       it "builds a huffman tree with the right code lengths" do
         expect(huffman_table.codeword_lengths).to eq(expected_codeword_lengths)

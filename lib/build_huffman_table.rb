@@ -45,8 +45,8 @@ class BuildHuffmanTable
     # traverse the tree
     @codeword_lengths = {}
 
-    # popoulate with zeroes
-    @num_symbols.times.each { |symbol| @codeword_lengths[symbol] = 0 }
+    # popoulate with nils
+    @num_symbols.times.each { |symbol| @codeword_lengths[symbol] = nil }
 
     @nodes.each { |node| traverse_codewords(node, 1) }
 

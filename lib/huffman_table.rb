@@ -1,4 +1,6 @@
 class HuffmanTable
+  attr_reader :codeword_lengths, :decoding_table, :encoding_table
+
   def initialize(codeword_lengths)
     @codeword_lengths = codeword_lengths
   end
@@ -7,18 +9,32 @@ class HuffmanTable
     load_table_if_needed
 
     bits = bitstream.read(@shortest_codeword_length)
-    until @table.key?(bits.join)
+
+    until @decoding_table.key?(bits.join)
       raise "Codeword not in table" if bits.size >= @longest_codeword_length
       bits += bitstream.read(1)
     end
 
-    @table[bits.join]
+    @decoding_table[bits.join]
+  end
+
+  def encode(symbols, bitstream)
+    load_table_if_needed
+
+    symbols.each do |symbol|
+      bitstream.write(@encoding_table[symbol].chars.map(&:to_i))
+    end
+
+    bitstream.flush
   end
 
   private
 
   def load_table_if_needed
-    @table ||= load_table
+    return if @decoding_table
+
+    @decoding_table = load_table
+    @encoding_table = @decoding_table.invert
   end
 
   def load_table
