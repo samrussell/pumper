@@ -4,7 +4,7 @@ class HuffmanTable
   end
 
   def decode(bitstream)
-    build_table_if_needed
+    load_table_if_needed
 
     bits = bitstream.read(@shortest_codeword_length)
     until @table.key?(bits.join)
@@ -17,11 +17,11 @@ class HuffmanTable
 
   private
 
-  def build_table_if_needed
-    @table ||= build_table
+  def load_table_if_needed
+    @table ||= load_table
   end
 
-  def build_table
+  def load_table
     @shortest_codeword_length = @codeword_lengths.compact.min
     @longest_codeword_length = @codeword_lengths.compact.max
     lengths_indices = @codeword_lengths.zip(0...@codeword_lengths.size)

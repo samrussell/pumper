@@ -2,7 +2,7 @@ require "./lib/bitstream.rb"
 require "./lib/length_decoder.rb"
 require "./lib/distance_decoder.rb"
 require "./lib/lz77_decoder.rb"
-require "./lib/build_huffman_tables.rb"
+require "./lib/load_huffman_tables.rb"
 
 class Unhuffer
   FIXED_HUFFMAN_CODES = 1
@@ -17,10 +17,10 @@ class Unhuffer
 
     read_header
 
-    huffman_table_builder = BuildHuffmanTables.new(@bitstream)
+    huffman_table_loader = LoadHuffmanTables.new(@bitstream)
 
-    @literal_length_table = huffman_table_builder.literal_length_table
-    @distance_table = huffman_table_builder.distance_table
+    @literal_length_table = huffman_table_loader.literal_length_table
+    @distance_table = huffman_table_loader.distance_table
 
     lz77_encoded_data = decode_huffman
 

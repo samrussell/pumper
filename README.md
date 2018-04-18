@@ -124,6 +124,6 @@ Coding the first 2 Huffman tables of course!
 
 ### More to come
 
-You can stop here if you like and start playing with the code. The part that encodes the encoders is BuildHuffmanTables, and it's good to see it in practice, but the important concepts are in the LZ77Decoder and HuffmanTable classes. The unit tests should give you a basic idea of how we're shrinking things down in size, and of course you can always drop in a byebug and see what's going on.
+You can stop here if you like and start playing with the code. The part that encodes the encoders is LoadHuffmanTables, and it's good to see it in practice, but the important concepts are in the LZ77Decoder and HuffmanTable classes. The unit tests should give you a basic idea of how we're shrinking things down in size, and of course you can always drop in a byebug and see what's going on.
 
 The samples folder has the Lorem Ipsum text as is and compressed with gzip, and unpack.rb should be able to decompress it for you - feel free to follow along and see what it does along the way. It gets a little convoluted building a Huffman table to decode the other Huffman tables, but once you've got them all set up the final decompression stage is pretty straightforward.
