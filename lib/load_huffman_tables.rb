@@ -45,7 +45,7 @@ class LoadHuffmanTables
       end
     end
 
-    code_lengths = code_lengths_dictionary.sort.map {|x| x[1]}
+    code_lengths = code_lengths_dictionary.sort.map {|(code, length)| length}
 
     HuffmanTable.new(code_lengths)
   end
